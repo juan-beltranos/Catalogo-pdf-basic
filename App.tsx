@@ -120,6 +120,15 @@ export const App: React.FC = () => {
         </AnimatePresence>
       </main>
 
+            {/* Floating Export Button */}
+      {viewMode === 'preview' && (
+        <ExportButton
+          targetRef={previewRef}
+          fileName={storeInfo.name || 'mi-catalogo'}
+          products={products}
+        />
+      )}
+
       {/* Footer Info */}
       <footer className="mt-20 py-10 border-t border-slate-200">
         <div className="max-w-6xl mx-auto px-4 text-center">
@@ -129,14 +138,7 @@ export const App: React.FC = () => {
         </div>
       </footer>
 
-      {/* Floating Export Button */}
-      {viewMode === 'preview' && (
-        <ExportButton
-          targetRef={previewRef}
-          fileName={storeInfo.name || 'mi-catalogo'}
-          products={products}
-        />
-      )}
+
     </div>
   );
 };

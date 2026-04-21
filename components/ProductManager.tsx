@@ -1,11 +1,19 @@
-import React, { useState } from 'react';
-import { Product } from '../types';
-import { Plus, Trash2, Package, Image as ImageIcon, Edit2, X, Check } from 'lucide-react';
-import { compressImage, formatCurrency } from '../constants';
-import { motion, AnimatePresence } from 'framer-motion';
-import { RichTextEditor } from './RichTextEditor';
-import { getImageUrl } from '@/helper/imageDB';
-import { ProductThumb } from './ProductThumb';
+import React, { useState } from "react";
+import { Product } from "../types";
+import {
+  Plus,
+  Trash2,
+  Package,
+  Image as ImageIcon,
+  Edit2,
+  X,
+  Check,
+} from "lucide-react";
+import { compressImage, formatCurrency } from "../constants";
+import { motion, AnimatePresence } from "framer-motion";
+import { RichTextEditor } from "./RichTextEditor";
+import { getImageUrl } from "@/helper/imageDB";
+import { ProductThumb } from "./ProductThumb";
 
 interface ProductManagerProps {
   products: Product[];
@@ -26,20 +34,26 @@ export const ProductManager: React.FC<ProductManagerProps> = ({
   const [editingId, setEditingId] = useState<string | null>(null);
 
   const [formData, setFormData] = useState({
-    name: '',
-    price: '',
-    description: '',
-    image: '',
-    imageId: '',
+    name: "",
+    price: "",
+    description: "",
+    image: "",
+    imageId: "",
   });
 
-  const [imagePreview, setImagePreview] = useState<string>('');
+  const [imagePreview, setImagePreview] = useState<string>("");
 
   const resetForm = () => {
-    setFormData({ name: '', price: '', description: '', image: '', imageId: '' });
+    setFormData({
+      name: "",
+      price: "",
+      description: "",
+      image: "",
+      imageId: "",
+    });
     setIsAdding(false);
     setEditingId(null);
-    setImagePreview('');
+    setImagePreview("");
   };
 
   const handleOpenEdit = async (product: Product) => {
@@ -47,8 +61,8 @@ export const ProductManager: React.FC<ProductManagerProps> = ({
       name: product.name,
       price: product.price.toString(),
       description: product.description,
-      image: product.image || '',
-      imageId: product.imageId || '',
+      image: product.image || "",
+      imageId: product.imageId || "",
     });
 
     setEditingId(product.id);
@@ -61,9 +75,9 @@ export const ProductManager: React.FC<ProductManagerProps> = ({
 
     if (product.imageId) {
       const url = await getImageUrl(product.imageId);
-      setImagePreview(url || '');
+      setImagePreview(url || "");
     } else {
-      setImagePreview('');
+      setImagePreview("");
     }
   };
 
@@ -100,10 +114,10 @@ export const ProductManager: React.FC<ProductManagerProps> = ({
 
     try {
       const base64 = await compressImage(file);
-      setFormData((prev) => ({ ...prev, image: base64, imageId: '' }));
+      setFormData((prev) => ({ ...prev, image: base64, imageId: "" }));
       setImagePreview(base64);
     } catch (err) {
-      console.error('Error processing product image', err);
+      console.error("Error processing product image", err);
     }
   };
 
@@ -161,7 +175,7 @@ export const ProductManager: React.FC<ProductManagerProps> = ({
             className="bg-white p-6 rounded-2xl shadow-sm border-2 border-blue-500 space-y-4"
           >
             <h3 className="font-bold text-lg text-blue-900">
-              {isEditing ? 'Editar Producto' : 'Nuevo Producto'}
+              {isEditing ? "Editar Producto" : "Nuevo Producto"}
             </h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -170,24 +184,35 @@ export const ProductManager: React.FC<ProductManagerProps> = ({
                   type="text"
                   placeholder="Nombre del producto"
                   value={formData.name}
-                  onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
+                  onChange={(e) =>
+                    setFormData((prev) => ({ ...prev, name: e.target.value }))
+                  }
                   className="w-full px-4 py-2 rounded-xl border border-slate-200 outline-none focus:ring-2 focus:ring-blue-500"
                 />
 
                 <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">$</span>
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
+                    $
+                  </span>
                   <input
                     type="number"
                     placeholder="Precio"
                     value={formData.price}
-                    onChange={(e) => setFormData((prev) => ({ ...prev, price: e.target.value }))}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        price: e.target.value,
+                      }))
+                    }
                     className="w-full pl-8 pr-4 py-2 rounded-xl border border-slate-200 outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
 
                 <RichTextEditor
                   value={formData.description}
-                  onChange={(html) => setFormData((prev) => ({ ...prev, description: html }))}
+                  onChange={(html) =>
+                    setFormData((prev) => ({ ...prev, description: html }))
+                  }
                   placeholder="Descripción (opcional)"
                 />
               </div>
@@ -203,8 +228,12 @@ export const ProductManager: React.FC<ProductManagerProps> = ({
                     />
                     <button
                       onClick={() => {
-                        setFormData((prev) => ({ ...prev, image: '', imageId: '' }));
-                        setImagePreview('');
+                        setFormData((prev) => ({
+                          ...prev,
+                          image: "",
+                          imageId: "",
+                        }));
+                        setImagePreview("");
                       }}
                       className="text-xs text-red-500 hover:underline"
                     >
@@ -214,8 +243,15 @@ export const ProductManager: React.FC<ProductManagerProps> = ({
                 ) : (
                   <label className="w-full h-full flex flex-col items-center justify-center cursor-pointer">
                     <ImageIcon className="w-10 h-10 text-slate-300 mb-2" />
-                    <span className="text-sm text-slate-500">Añadir foto del producto</span>
-                    <input type="file" accept="image/*" className="hidden" onChange={handleImageChange} />
+                    <span className="text-sm text-slate-500">
+                      Añadir foto del producto
+                    </span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={handleImageChange}
+                    />
                   </label>
                 )}
               </div>
@@ -226,15 +262,19 @@ export const ProductManager: React.FC<ProductManagerProps> = ({
               disabled={!formData.name || !formData.price}
               className="w-full bg-blue-600 text-white py-3 rounded-xl font-bold hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2"
             >
-              {isEditing ? <Check className="w-5 h-5" /> : <Plus className="w-5 h-5" />}
-              {isEditing ? 'Guardar Cambios' : 'Crear Producto'}
+              {isEditing ? (
+                <Check className="w-5 h-5" />
+              ) : (
+                <Plus className="w-5 h-5" />
+              )}
+              {isEditing ? "Guardar Cambios" : "Crear Producto"}
             </button>
           </motion.div>
         )}
       </AnimatePresence>
 
       {/* Products grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-[90%] mx-auto sm:w-full">
         <AnimatePresence>
           {products.map((product) => (
             <motion.div
@@ -243,8 +283,11 @@ export const ProductManager: React.FC<ProductManagerProps> = ({
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
-              className={`bg-white rounded-2xl p-4 shadow-sm border group relative transition-all ${editingId === product.id ? 'border-blue-500 ring-2 ring-blue-50' : 'border-slate-100'
-                }`}
+              className={`bg-white rounded-2xl p-4 shadow-sm border group relative transition-all ${
+                editingId === product.id
+                  ? "border-blue-500 ring-2 ring-blue-50"
+                  : "border-slate-100"
+              }`}
             >
               <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity z-10">
                 <button
@@ -265,16 +308,25 @@ export const ProductManager: React.FC<ProductManagerProps> = ({
 
               <div className="flex gap-4">
                 <div className="w-20 h-20 bg-slate-100 rounded-xl overflow-hidden flex-shrink-0">
-                  <ProductThumb product={product} className="max-w-full max-h-full object-contain block" />
+                  <ProductThumb
+                    product={product}
+                    className="max-w-full max-h-full object-contain block"
+                  />
                 </div>
 
                 <div className="flex-1 min-w-0">
-                  <h3 className="font-bold text-slate-900 truncate">{product.name}</h3>
-                  <p className="text-blue-600 font-semibold mt-1">{formatCurrency(product.price)}</p>
+                  <h3 className="font-bold text-slate-900 truncate">
+                    {product.name}
+                  </h3>
+                  <p className="text-blue-600 font-semibold mt-1">
+                    {formatCurrency(product.price)}
+                  </p>
 
                   <div
                     className="text-xs text-slate-500 line-clamp-2 mt-1 prose prose-sm max-w-none"
-                    dangerouslySetInnerHTML={{ __html: product.description || '<p>Sin descripción</p>' }}
+                    dangerouslySetInnerHTML={{
+                      __html: product.description || "<p>Sin descripción</p>",
+                    }}
                   />
                 </div>
               </div>
@@ -285,7 +337,9 @@ export const ProductManager: React.FC<ProductManagerProps> = ({
         {products.length === 0 && !isAdding && !isEditing && (
           <div className="col-span-full py-20 text-center bg-white rounded-2xl border-2 border-dashed border-slate-200">
             <Package className="w-12 h-12 text-slate-200 mx-auto mb-4" />
-            <p className="text-slate-400">Aún no tienes productos. ¡Agrega el primero!</p>
+            <p className="text-slate-400">
+              Aún no tienes productos. ¡Agrega el primero!
+            </p>
           </div>
         )}
       </div>

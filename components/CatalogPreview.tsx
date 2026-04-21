@@ -155,7 +155,7 @@ export const CatalogPreview: React.FC<CatalogPreviewProps> = ({ storeInfo, produ
 
         {/* Products Grid Area */}
         <div className={`p-10 flex-grow ${isMinimalist ? 'pt-8' : isModern ? 'pt-12' : 'pt-6'}`}>
-          <div className="products-grid grid grid-cols-2  gap-y-12">
+          <div className="products-grid grid grid-cols-1 md:grid-cols-2  gap-y-12">
 
             {products.map((product) => (
               <div key={product.id}
