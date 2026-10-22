@@ -106,16 +106,20 @@ export const ExportButton: React.FC<ExportButtonProps> = ({ targetRef, fileName,
       // =========================
       const grid = clone.querySelector(".products-grid") as HTMLElement | null;
       if (grid) {
-        grid.style.display = "block";
+        // Una cuadricula explicita evita las diferencias de espaciado de
+        // inline-block entre Chrome, Safari, Firefox y sus versiones moviles.
+        grid.style.display = "grid";
+        grid.style.gridTemplateColumns = "repeat(2, minmax(0, 1fr))";
+        grid.style.columnGap = "24px";
+        grid.style.rowGap = "48px";
       }
 
       const cards = Array.from(clone.querySelectorAll(".product-pdf")) as HTMLElement[];
-      cards.forEach((card, idx) => {
-        card.style.display = "inline-block";
-        card.style.verticalAlign = "top";
-        card.style.width = "48%";
-        card.style.marginBottom = "24px";
-        card.style.marginRight = idx % 2 === 0 ? "4%" : "0";
+      cards.forEach((card) => {
+        card.style.display = "flex";
+        card.style.width = "auto";
+        card.style.minWidth = "0";
+        card.style.margin = "0";
       });
 
       // =========================
@@ -158,6 +162,21 @@ export const ExportButton: React.FC<ExportButtonProps> = ({ targetRef, fileName,
           }
         })
       );
+
+      // Esperar tambien a que las fuentes terminen de medir. Esto mantiene
+      // iguales las alturas y los saltos de pagina en todos los sistemas.
+      if (document.fonts?.ready) await document.fonts.ready;
+
+      // Guardar los limites verticales antes de rasterizar. Luego se usan para
+      // impedir que un salto de pagina atraviese cualquier tarjeta.
+      const cloneRect = clone.getBoundingClientRect();
+      const cardBoundsCssPx = cards.map((card) => {
+        const rect = card.getBoundingClientRect();
+        return {
+          top: rect.top - cloneRect.top,
+          bottom: rect.bottom - cloneRect.top,
+        };
+      });
 
       // B) Estilos "contain" sin forzar width/height (evita deformación en html2canvas)
       imgs.forEach((img) => {
@@ -212,11 +231,32 @@ export const ExportButton: React.FC<ExportButtonProps> = ({ targetRef, fileName,
       const pxPerMm = canvas.width / usableWmm;
       const pageHeightPx = Math.floor(usableHmm * pxPerMm);
 
+      const cssToCanvasY = canvas.height / Math.max(clone.scrollHeight, 1);
+      const cardBounds = cardBoundsCssPx.map(({ top, bottom }) => ({
+        top: Math.floor(top * cssToCanvasY),
+        bottom: Math.ceil(bottom * cssToCanvasY),
+      }));
+
       let offsetY = 0;
       let pageIndex = 0;
 
       while (offsetY < canvas.height) {
-        const sliceHeight = Math.min(pageHeightPx, canvas.height - offsetY);
+        const naturalEnd = Math.min(offsetY + pageHeightPx, canvas.height);
+        let sliceEnd = naturalEnd;
+
+        if (naturalEnd < canvas.height) {
+          const crossedCards = cardBounds.filter(
+            ({ top, bottom }) => top < naturalEnd && bottom > naturalEnd && top > offsetY
+          );
+
+          if (crossedCards.length > 0) {
+            const safeBreak = Math.min(...crossedCards.map(({ top }) => top));
+            // El margen evita capturar una linea de antialias de la tarjeta.
+            if (safeBreak - offsetY > 40) sliceEnd = Math.max(offsetY + 1, safeBreak - 2);
+          }
+        }
+
+        const sliceHeight = sliceEnd - offsetY;
 
         const pageCanvas = document.createElement("canvas");
         pageCanvas.width = canvas.width;
@@ -234,7 +274,7 @@ export const ExportButton: React.FC<ExportButtonProps> = ({ targetRef, fileName,
         if (pageIndex > 0) pdf.addPage();
         pdf.addImage(pageImg, "JPEG", margin, margin, usableWmm, sliceHmm, undefined, "FAST");
 
-        offsetY += sliceHeight;
+        offsetY = sliceEnd;
         pageIndex++;
       }
 

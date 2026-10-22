@@ -27,13 +27,13 @@ export const CatalogPreview: React.FC<CatalogPreviewProps> = ({ storeInfo, produ
   const isModern = templateId === 'modern';
 
   return (
-    <div className="flex justify-center w-full min-h-screen p-4 md:p-8 bg-slate-200/30">
+    <div className="flex justify-center w-full min-h-screen p-2 sm:p-4 md:p-8 bg-slate-200/30">
       <div
         ref={previewRef}
         id="catalog-capture-area"
-        className={`bg-white w-[800px] shadow-2xl overflow-hidden text-slate-900 flex flex-col ${isModern ? 'rounded-[2.5rem]' : isMinimalist ? 'rounded-none' : 'rounded-lg'
+        className={`bg-white w-full max-w-[800px] shadow-2xl overflow-hidden text-slate-900 flex flex-col ${isModern ? 'rounded-[2.5rem]' : isMinimalist ? 'rounded-none' : 'rounded-lg'
           }`}
-        style={{ minHeight: '1120px', width: '800px', ['--brand-color' as any]: storeInfo.color || '#f97316', }}
+        style={{ minHeight: '1120px', ['--brand-color' as any]: storeInfo.color || '#f97316', }}
       >
         <style>{`
 
